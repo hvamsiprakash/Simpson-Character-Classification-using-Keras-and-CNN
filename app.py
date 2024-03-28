@@ -161,7 +161,7 @@ def load_model():
         model_url='https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/models/model.h5'
         response = requests.get(model_url)
         response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
-        model_path = 'model (1).h5'
+        model_path = 'model.h5'  # Update model path
         with open(model_path, 'wb') as f:
             f.write(response.content)
         model = keras.models.load_model(model_path)
