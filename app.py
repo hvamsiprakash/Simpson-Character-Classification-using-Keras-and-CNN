@@ -307,4 +307,73 @@
 
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
+from flask import Flask, render_template, request
+import requests
+from PIL import Image
+from io import BytesIO
+import numpy as np
+import tensorflow as tf
+
+app = Flask(__name__)
+
+# Function to load images from the provided URLs
+def load_images():
+    title1_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png'    
+    title2_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title2.png'
+    title1_image = Image.open(BytesIO(requests.get(title1_url).content))
+    title2_image = Image.open(BytesIO(requests.get(title2_url).content))
+    return title1_image, title2_image
+
+# Load and display images as titles
+title1_image, title2_image = load_images()
+
+# Load the model
+def load_model():
+    model = tf.keras.models.load_model('models/model.h5')
+    return model 
+
+model = load_model()
+
+# Map class indices to character names
+map_characters = {
+    0: 'abraham_grampa_simpson',
+    1: 'apu_nahasapeemapetilon',
+    2: 'bart_simpson',
+    3: 'charles_montgomery_burns',
+    4: 'chief_wiggum',
+    5: 'comic_book_guy',
+    6: 'edna_krabappel',
+    7: 'homer_simpson',
+    8: 'kent_brockman',
+    9: 'krusty_the_clown',
+    10: 'lisa_simpson',
+    11: 'marge_simpson',
+    12: 'milhouse_van_houten',
+    13: 'moe_szyslak',
+    14: 'ned_flanders',
+    15: 'nelson_muntz',
+    16: 'principal_skinner',
+    17: 'sideshow_bob'
+}
+
+@app.route('/')
+def index():
+    return render_template('index.html', title1_image=title1_image, title2_image=title2_image)
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    uploaded_file = request.files['file']
+    if uploaded_file.filename != '':
+        image = Image.open(uploaded_file)
+        image = image.resize((64, 64))
+        processed_image = np.array(image) / 255.0
+        processed_image = np.expand_dims(processed_image, axis=0)
+        prediction = model.predict(processed_image)
+        predicted_class_index = np.argmax(prediction)
+        predicted_character = map_characters.get(predicted_class_index, "Unknown")
+        return render_template('result.html', predicted_character=predicted_character)
+    return render_template('index.html', error_message="No file uploaded.")
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
