@@ -307,29 +307,21 @@
 
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
-import os
-from flask import Flask, render_template, request, redirect, url_for
+import warnings
+warnings.filterwarnings("ignore")
+
+# imports
+from flask import Flask, render_template, request, jsonify
 from PIL import Image
 import numpy as np
 import tensorflow as tf
 
 app = Flask(__name__)
 
-# Function to preprocess image
-def preprocess_image(image):
-    img = image.resize((64, 64))
-    img = np.array(img)
-    img = img.astype("float32") / 255.0
-    return img
+# Load the trained model
+model = tf.keras.models.load_model('models/model.h5')
 
-# Load the pre-trained model
-def load_model():
-    model = tf.keras.models.load_model('models/model.h5')
-    return model
-
-model = load_model()
-
-# Map class indices to character names
+# Define the mapping of class indices to character names
 map_characters = {
     0: 'abraham_grampa_simpson',
     1: 'apu_nahasapeemapetilon',
@@ -351,19 +343,33 @@ map_characters = {
     17: 'sideshow_bob'
 }
 
-# Route for the main page
+# Preprocess the image
+def preprocess_image(image):
+    img = image.resize((64, 64))  # Resize the image
+    img = np.array(img)  # Convert to numpy array
+    img = img.astype("float32") / 255.0  # Normalize pixel values
+    return img
+
+# Function to predict character
+def predict_character(image):
+    processed_image = preprocess_image(image)
+    prediction = model.predict(np.expand_dims(processed_image, axis=0))
+    predicted_class_index = np.argmax(prediction)
+    predicted_character = map_characters.get(predicted_class_index, "Unknown")
+    return predicted_character
+
+# Define routes
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Get uploaded file
-        file = request.files['file']
-        if file:
-            image = Image.open(file)
-            processed_image = preprocess_image(image)
-            prediction = model.predict(np.expand_dims(processed_image, axis=0))
-            predicted_class_index = np.argmax(prediction)
-            predicted_character = map_characters.get(predicted_class_index, "Unknown")
-            return render_template('result.html', predicted_character=predicted_character)
+        # Get the uploaded image from the request
+        uploaded_file = request.files['file']
+        if uploaded_file.filename != '':
+            # Read the image file
+            image = Image.open(uploaded_file)
+            # Predict the character
+            predicted_character = predict_character(image)
+            return render_template('result.html', character=predicted_character)
     return render_template('index.html')
 
 if __name__ == '__main__':
