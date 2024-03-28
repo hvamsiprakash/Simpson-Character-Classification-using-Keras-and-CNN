@@ -115,107 +115,107 @@
 
 
 
-# import streamlit as st
-# import requests
-# from PIL import Image
-# from io import BytesIO
-# import numpy as np
-# import tensorflow as tf
+import streamlit as st
+import requests
+from PIL import Image
+from io import BytesIO
+import numpy as np
+import tensorflow as tf
 
-# # Function to load images from the provided URLs
-# def load_images():
-#     title1_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png'    
-#     title2_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title2.png'
-#     title1_image = Image.open(BytesIO(requests.get(title1_url).content))
-#     title2_image = Image.open(BytesIO(requests.get(title2_url).content))
-#     return title1_image, title2_image
+# Function to load images from the provided URLs
+def load_images():
+    title1_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png'    
+    title2_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title2.png'
+    title1_image = Image.open(BytesIO(requests.get(title1_url).content))
+    title2_image = Image.open(BytesIO(requests.get(title2_url).content))
+    return title1_image, title2_image
 
-# # Load and display images as titles
-# title1_image, title2_image = load_images()
+# Load and display images as titles
+title1_image, title2_image = load_images()
 
-# # Set page background color to black
-# st.markdown("""
-#     <style>
-#         body {
-#             background-color: black;
-#             color: white;
-#         }
-#     </style>
-# """, unsafe_allow_html=True)
+# Set page background color to black
+st.markdown("""
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-# # Display title images in the main interface
-# st.image(title1_image, use_column_width=True)
-# st.image(title2_image, use_column_width=True)
+# Display title images in the main interface
+st.image(title1_image, use_column_width=True)
+st.image(title2_image, use_column_width=True)
 
-# # Function to preprocess image
-# def preprocess_image(image):
-#     img = image.resize((64, 64))
-#     img = np.array(img)
-#     img = img.astype("float32") / 255.0
-#     return img
+# Function to preprocess image
+def preprocess_image(image):
+    img = image.resize((64, 64))
+    img = np.array(img)
+    img = img.astype("float32") / 255.0
+    return img
 
-# # Load the model
-# @st.cache(allow_output_mutation=True)
-# def load_model():
-#     model=tf.keras.models.load_model('models/model.h5')
-#     return model 
+# Load the model
+@st.cache(allow_output_mutation=True)
+def load_model():
+    model=tf.keras.models.load_model('models/model.h5')
+    return model 
 
-# model = load_model()
+model = load_model()
 
-# # Map class indices to character names
-# map_characters = {
-#     0: 'abraham_grampa_simpson',
-#     1: 'apu_nahasapeemapetilon',
-#     2: 'bart_simpson',
-#     3: 'charles_montgomery_burns',
-#     4: 'chief_wiggum',
-#     5: 'comic_book_guy',
-#     6: 'edna_krabappel',
-#     7: 'homer_simpson',
-#     8: 'kent_brockman',
-#     9: 'krusty_the_clown',
-#     10: 'lisa_simpson',
-#     11: 'marge_simpson',
-#     12: 'milhouse_van_houten',
-#     13: 'moe_szyslak',
-#     14: 'ned_flanders',
-#     15: 'nelson_muntz',
-#     16: 'principal_skinner',
-#     17: 'sideshow_bob'
-# }
+# Map class indices to character names
+map_characters = {
+    0: 'abraham_grampa_simpson',
+    1: 'apu_nahasapeemapetilon',
+    2: 'bart_simpson',
+    3: 'charles_montgomery_burns',
+    4: 'chief_wiggum',
+    5: 'comic_book_guy',
+    6: 'edna_krabappel',
+    7: 'homer_simpson',
+    8: 'kent_brockman',
+    9: 'krusty_the_clown',
+    10: 'lisa_simpson',
+    11: 'marge_simpson',
+    12: 'milhouse_van_houten',
+    13: 'moe_szyslak',
+    14: 'ned_flanders',
+    15: 'nelson_muntz',
+    16: 'principal_skinner',
+    17: 'sideshow_bob'
+}
 
-# # Streamlit UI
-# st.sidebar.title("Project Description")
-# st.sidebar.markdown("""
-# This is a Simpson Character Classifier. 
-# It takes an image of a Simpsons character as input and predicts which character it is. 
-# The model used for prediction is a convolutional neural network (CNN) trained on a dataset of Simpsons characters.
-# """)
+# Streamlit UI
+st.sidebar.title("Project Description")
+st.sidebar.markdown("""
+This is a Simpson Character Classifier. 
+It takes an image of a Simpsons character as input and predicts which character it is. 
+The model used for prediction is a convolutional neural network (CNN) trained on a dataset of Simpsons characters.
+""")
 
-# st.sidebar.title("Classes Predicted")
-# # Display the 17 classes the model can predict
-# for character_name in map_characters.values():
-#     st.sidebar.write(character_name)
+st.sidebar.title("Classes Predicted")
+# Display the 17 classes the model can predict
+for character_name in map_characters.values():
+    st.sidebar.write(character_name)
 
-# st.title("Simpson Character Classifier")
+st.title("Simpson Character Classifier")
 
-# # Uploaded file for prediction
-# uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# Uploaded file for prediction
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-# if uploaded_file is not None and model is not None:
-#     image = Image.open(uploaded_file)
-#     # Resize the uploaded image
-#     image = image.resize((64, 64))
-#     st.image(image, caption='Uploaded Image', use_column_width=True)
+if uploaded_file is not None and model is not None:
+    image = Image.open(uploaded_file)
+    # Resize the uploaded image
+    image = image.resize((64, 64))
+    st.image(image, caption='Uploaded Image', use_column_width=True)
     
-#     # Preprocess image and predict character
-#     processed_image = preprocess_image(image)
-#     prediction = model.predict(np.expand_dims(processed_image, axis=0))
-#     predicted_class_index = np.argmax(prediction)
-#     predicted_character = map_characters.get(predicted_class_index, "Unknown")
+    # Preprocess image and predict character
+    processed_image = preprocess_image(image)
+    prediction = model.predict(np.expand_dims(processed_image, axis=0))
+    predicted_class_index = np.argmax(prediction)
+    predicted_character = map_characters.get(predicted_class_index, "Unknown")
     
-#     # Display predicted character
-#     st.write(f"Predicted Character: {predicted_character}")
+    # Display predicted character
+    st.write(f"Predicted Character: {predicted_character}")
 
 # import streamlit as st
 # import requests
@@ -306,71 +306,3 @@
 #     st.write(f"Predicted Character: {predicted_character}")
 
 
-#--------------------------------------------------------------------------------------------------------------------------------------------------------
-import warnings
-warnings.filterwarnings("ignore")
-
-# imports
-from flask import Flask, render_template, request, jsonify
-from PIL import Image
-import numpy as np
-import tensorflow as tf
-
-app = Flask(__name__)
-
-# Load the trained model
-model = tf.keras.models.load_model('models/model.h5')
-
-# Define the mapping of class indices to character names
-map_characters = {
-    0: 'abraham_grampa_simpson',
-    1: 'apu_nahasapeemapetilon',
-    2: 'bart_simpson',
-    3: 'charles_montgomery_burns',
-    4: 'chief_wiggum',
-    5: 'comic_book_guy',
-    6: 'edna_krabappel',
-    7: 'homer_simpson',
-    8: 'kent_brockman',
-    9: 'krusty_the_clown',
-    10: 'lisa_simpson',
-    11: 'marge_simpson',
-    12: 'milhouse_van_houten',
-    13: 'moe_szyslak',
-    14: 'ned_flanders',
-    15: 'nelson_muntz',
-    16: 'principal_skinner',
-    17: 'sideshow_bob'
-}
-
-# Preprocess the image
-def preprocess_image(image):
-    img = image.resize((64, 64))  # Resize the image
-    img = np.array(img)  # Convert to numpy array
-    img = img.astype("float32") / 255.0  # Normalize pixel values
-    return img
-
-# Function to predict character
-def predict_character(image):
-    processed_image = preprocess_image(image)
-    prediction = model.predict(np.expand_dims(processed_image, axis=0))
-    predicted_class_index = np.argmax(prediction)
-    predicted_character = map_characters.get(predicted_class_index, "Unknown")
-    return predicted_character
-
-# Define routes
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        # Get the uploaded image from the request
-        uploaded_file = request.files['file']
-        if uploaded_file.filename != '':
-            # Read the image file
-            image = Image.open(uploaded_file)
-            # Predict the character
-            predicted_character = predict_character(image)
-            return render_template('result.html', character=predicted_character)
-    return render_template('index.html')
-
-if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
