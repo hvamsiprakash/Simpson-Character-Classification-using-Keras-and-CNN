@@ -9,59 +9,48 @@
             background-color: black;
             color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
+            margin: 0;
+            padding: 0;
         }
         .container {
-            margin-top: 20px;
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            padding-top: 50px;
         }
-        .title {
+        img {
+            max-width: 100%;
+        }
+        h1 {
             margin-bottom: 20px;
-        }
-        .image-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .image {
-            width: 45%;
-            border: 2px solid white;
-            border-radius: 5px;
         }
         .upload-form {
-            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        .upload-form input[type="file"] {
+            display: none;
         }
         .upload-btn {
-            padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #4CAF50;
             color: white;
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            border-radius: 5px;
         }
-        .error-message {
-            color: red;
+        .upload-btn:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="title">
-            <h1>Simpson Character Classifier</h1>
-            <p>This app predicts the character in an uploaded image.</p>
-        </div>
-        <div class="image-container">
-            <div>
-                <img src="{{ url_for('static', filename=title1_image.filename) }}" alt="Title Image 1" class="image">
-            </div>
-        </div>
-        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
-            <input type="file" name="file" accept=".jpg, .jpeg, .png" required>
-            <button type="submit" class="upload-btn">Upload Image</button>
+        <img src="https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png" alt="Simpsons Title Image">
+        <h1>Simpson Character Classifier</h1>
+        <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+            <label for="file-upload" class="upload-btn">Choose an image...</label>
+            <input id="file-upload" type="file" name="file" accept="image/*">
         </form>
-        {% if error_message %}
-            <p class="error-message">{{ error_message }}</p>
-        {% endif %}
     </div>
 </body>
 </html>
-
