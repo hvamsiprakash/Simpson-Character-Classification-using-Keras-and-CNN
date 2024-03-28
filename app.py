@@ -7,8 +7,8 @@ import tensorflow.keras as keras
 
 # Function to load images from the provided URLs
 def load_images():
-    title1_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/master/images/title1.png'    
-    title2_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/master/images/title2.png'
+    title1_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png'    
+    title2_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title2.png'
     title1_image = Image.open(BytesIO(requests.get(title1_url).content))
     title2_image = Image.open(BytesIO(requests.get(title2_url).content))
     return title1_image, title2_image
