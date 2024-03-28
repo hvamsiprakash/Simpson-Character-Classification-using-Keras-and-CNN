@@ -1,1 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simpson Character Classifier</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .title {
+            margin-bottom: 20px;
+        }
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .image {
+            width: 45%;
+            border: 2px solid white;
+            border-radius: 5px;
+        }
+        .upload-form {
+            margin-bottom: 20px;
+        }
+        .upload-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>Simpson Character Classifier</h1>
+            <p>This app predicts the character in an uploaded image.</p>
+        </div>
+        <div class="image-container">
+            <div>
+                <img src="{{ url_for('static', filename=title1_image.filename) }}" alt="Title Image 1" class="image">
+            </div>
+        </div>
+        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+            <input type="file" name="file" accept=".jpg, .jpeg, .png" required>
+            <button type="submit" class="upload-btn">Upload Image</button>
+        </form>
+        {% if error_message %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
 
