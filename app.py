@@ -172,13 +172,6 @@ def load_model():
 
 model = load_model()
 
-# Function to predict
-def predict(image, model):
-    processed_image = preprocess_image(image)
-    prediction = model.predict(np.expand_dims(processed_image, axis=0))
-    predicted_class = np.argmax(prediction)
-    return predicted_class
-
 # Map class indices to character names
 map_characters = {
     0: 'abraham_grampa_simpson',
@@ -222,10 +215,14 @@ uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png
 if uploaded_file is not None and model is not None:
     image = Image.open(uploaded_file)
     # Resize the uploaded image
-    image = image.resize((200, 200))
+    image = image.resize((64, 64))
     st.image(image, caption='Uploaded Image', use_column_width=True)
-    prediction = predict(image, model)
-    predicted_character = map_characters.get(prediction, "Unknown")
     
-    # Check for mismatches
+    # Preprocess image and predict character
+    processed_image = preprocess_image(image)
+    prediction = model.predict(np.expand_dims(processed_image, axis=0))
+    predicted_class_index = np.argmax(prediction)
+    predicted_character = map_characters.get(predicted_class_index, "Unknown")
+    
+    # Display predicted character
     st.write(f"Predicted Character: {predicted_character}")
