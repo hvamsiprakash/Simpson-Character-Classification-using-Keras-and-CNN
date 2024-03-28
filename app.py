@@ -120,7 +120,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 import numpy as np
-import tensorflow.keras as keras
+import tensorflow as tf
 
 # Function to load images from the provided URLs
 def load_images():
@@ -155,20 +155,10 @@ def preprocess_image(image):
     return img
 
 # Load the model
-@st.cache(allow_output_mutation=True, suppress_st_warning=True)
+@st.cache(allow_output_mutation=True)
 def load_model():
-    try:
-        model_url='https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/models/model.h5'
-        response = requests.get(model_url)
-        response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
-        model_path = 'model.h5'  # Update model path
-        with open(model_path, 'wb') as f:
-            f.write(response.content)
-        model = keras.models.load_model(model_path)
-        return model
-    except Exception as e:
-        st.error(f"Error loading model: {str(e)}")
-        return None
+    model=tf.keras.models.load_model('models/model.h5')
+    return model 
 
 model = load_model()
 
