@@ -3,46 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simpson Character Classifier Result</title>
+    <title>Result | Simpson Character Classifier</title>
     <style>
         body {
             background-color: black;
             color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
+            margin: 0;
+            padding: 0;
         }
         .container {
-            margin-top: 20px;
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            padding-top: 50px;
         }
-        .title {
+        img {
+            max-width: 100%;
+        }
+        h1 {
             margin-bottom: 20px;
-        }
-        .image-container {
-            margin-bottom: 20px;
-        }
-        .image {
-            width: 300px;
-            border: 2px solid white;
-            border-radius: 5px;
-        }
-        .result {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="title">
-            <h1>Simpson Character Classifier Result</h1>
-        </div>
-        <div class="image-container">
-            <img src="{{ url_for('static', filename='images/result_image.png') }}" alt="Result Image" class="image">
-        </div>
-        <div class="result">
-            <p>Predicted Character: {{ predicted_character }}</p>
-        </div>
+        <img src="https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title2.png" alt="Simpsons Title Image">
+        <h1>Result</h1>
+        <h2>Predicted Character: {{ predicted_character }}</h2>
     </div>
 </body>
 </html>
