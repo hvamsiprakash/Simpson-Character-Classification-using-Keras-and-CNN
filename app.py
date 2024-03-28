@@ -307,10 +307,9 @@
 
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from PIL import Image
-import requests
-from io import BytesIO
 import numpy as np
 import tensorflow as tf
 
@@ -323,63 +322,49 @@ def preprocess_image(image):
     img = img.astype("float32") / 255.0
     return img
 
-# Function to load the model
+# Load the pre-trained model
 def load_model():
     model = tf.keras.models.load_model('models/model.h5')
     return model
 
-# Function to predict character
-def predict_character(image, model):
-    processed_image = preprocess_image(image)
-    prediction = model.predict(np.expand_dims(processed_image, axis=0))
-    predicted_class_index = np.argmax(prediction)
-    return predicted_class_index
+model = load_model()
 
-@app.route('/')
+# Map class indices to character names
+map_characters = {
+    0: 'abraham_grampa_simpson',
+    1: 'apu_nahasapeemapetilon',
+    2: 'bart_simpson',
+    3: 'charles_montgomery_burns',
+    4: 'chief_wiggum',
+    5: 'comic_book_guy',
+    6: 'edna_krabappel',
+    7: 'homer_simpson',
+    8: 'kent_brockman',
+    9: 'krusty_the_clown',
+    10: 'lisa_simpson',
+    11: 'marge_simpson',
+    12: 'milhouse_van_houten',
+    13: 'moe_szyslak',
+    14: 'ned_flanders',
+    15: 'nelson_muntz',
+    16: 'principal_skinner',
+    17: 'sideshow_bob'
+}
+
+# Route for the main page
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    title1_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png'    
-    title1_image = Image.open(BytesIO(requests.get(title1_url).content))
-    return render_template('index.html', title1_image=title1_image)
-
-@app.route('/upload', methods=['POST'])
-def upload():
-    model = load_model()
-    if 'file' not in request.files:
-        return redirect(url_for('index', error_message='No file uploaded'))
-    file = request.files['file']
-    if file.filename == '':
-        return redirect(url_for('index', error_message='No file selected'))
-    if file:
-        image = Image.open(file)
-        predicted_class_index = predict_character(image, model)
-        return redirect(url_for('result', predicted_class_index=predicted_class_index))
-
-@app.route('/result')
-def result():
-    predicted_class_index = int(request.args.get('predicted_class_index'))
-    map_characters = {
-        0: 'abraham_grampa_simpson',
-        1: 'apu_nahasapeemapetilon',
-        2: 'bart_simpson',
-        3: 'charles_montgomery_burns',
-        4: 'chief_wiggum',
-        5: 'comic_book_guy',
-        6: 'edna_krabappel',
-        7: 'homer_simpson',
-        8: 'kent_brockman',
-        9: 'krusty_the_clown',
-        10: 'lisa_simpson',
-        11: 'marge_simpson',
-        12: 'milhouse_van_houten',
-        13: 'moe_szyslak',
-        14: 'ned_flanders',
-        15: 'nelson_muntz',
-        16: 'principal_skinner',
-        17: 'sideshow_bob'
-    }
-    predicted_character = map_characters.get(predicted_class_index, "Unknown")
-    return render_template('result.html', predicted_character=predicted_character)
+    if request.method == 'POST':
+        # Get uploaded file
+        file = request.files['file']
+        if file:
+            image = Image.open(file)
+            processed_image = preprocess_image(image)
+            prediction = model.predict(np.expand_dims(processed_image, axis=0))
+            predicted_class_index = np.argmax(prediction)
+            predicted_character = map_characters.get(predicted_class_index, "Unknown")
+            return render_template('result.html', predicted_character=predicted_character)
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
-
