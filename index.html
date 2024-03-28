@@ -9,47 +9,29 @@
             background-color: black;
             color: white;
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
         }
         .container {
-            max-width: 800px;
-            margin: auto;
-            text-align: center;
-            padding-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
-        img {
-            max-width: 100%;
-        }
-        h1 {
+        .title-image {
             margin-bottom: 20px;
-        }
-        .upload-form {
-            margin-top: 20px;
-        }
-        .upload-form input[type="file"] {
-            display: none;
-        }
-        .upload-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .upload-btn:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png" alt="Simpsons Title Image">
+        <img src="https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title1.png" alt="Title 1" class="title-image">
+        <img src="https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/main/images/title2.png" alt="Title 2" class="title-image">
         <h1>Simpson Character Classifier</h1>
-        <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
-            <label for="file-upload" class="upload-btn">Choose an image...</label>
-            <input id="file-upload" type="file" name="file" accept="image/*">
+        <form action="/result" method="post" enctype="multipart/form-data">
+            <label for="image-upload">Choose an image...</label>
+            <input type="file" id="image-upload" name="image" accept="image/*" required>
+            <br>
+            <button type="submit">Predict</button>
         </form>
     </div>
 </body>
