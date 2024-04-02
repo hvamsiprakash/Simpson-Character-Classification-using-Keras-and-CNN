@@ -340,7 +340,7 @@ import numpy as np
 import tensorflow as tf
 
 # Function to load the model and class names
-@st.cache(allow_output_mutation=True)
+@st.cache_data(allow_output_mutation=True)
 def load_model_and_labels():
     model = tf.keras.models.load_model('models/model.h5')
     
@@ -399,4 +399,3 @@ if uploaded_file is not None:
 
     # Display predicted character
     st.write(f"Predicted Character: {predicted_character}")
-
