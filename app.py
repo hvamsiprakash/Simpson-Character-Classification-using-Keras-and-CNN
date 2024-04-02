@@ -287,7 +287,7 @@ def load_model_and_labels():
     with open('models/labels.txt', 'r') as f:
         for line in f:
             key, val = line.strip().split(' ', 1)
-            class_names[int(key)] = val
+            class_names[int(key)] = val.replace("_", " ")  # Replacing underscores with spaces
     return model, class_names
 
 # Function to preprocess image
@@ -331,4 +331,3 @@ if uploaded_file is not None:
 
     # Display predicted character
     st.write(f"Predicted Character: {predicted_character}")
-
