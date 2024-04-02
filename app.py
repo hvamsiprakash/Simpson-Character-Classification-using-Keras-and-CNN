@@ -340,7 +340,7 @@ import numpy as np
 import tensorflow as tf
 
 # Function to load the model and class names
-@st.cache_data(allow_output_mutation=True)
+@st.cache
 def load_model_and_labels():
     model = tf.keras.models.load_model('models/model.h5')
     
