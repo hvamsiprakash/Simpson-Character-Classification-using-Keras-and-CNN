@@ -218,43 +218,102 @@
 #     st.write(f"Predicted Character: {predicted_character}")
 
 
+# import streamlit as st
+# from PIL import Image
+# import numpy as np
+# import tensorflow as tf
+# from io import BytesIO
+# import requests
+
+
+# @st.cache(allow_output_mutation=True)
+# def load_model_and_labels():
+#     # Load the trained model from the specified directory.
+#     model = tf.keras.models.load_model('models/model.h5')
+#     class_names = {}
+    
+#     # Open and read the labels file.
+#     with open('models/labels.txt', 'r') as f:
+#         for line in f:
+#             # Split each line at the first space to separate the index from the class name.
+#             parts = line.strip().split(' ', 1)
+#             if len(parts) == 2:  # Ensure there are exactly two parts.
+#                 key, val = parts
+#                 class_names[int(key)] = val
+#             else:
+#                 print(f"Skipping invalid line in labels file: '{line}'")
+#     return model, class_names
+
+# model, class_names = load_model_and_labels()
+
+
+# # Function to preprocess image
+# def preprocess_image(image):
+#     img = image.resize((64, 64))
+#     img = np.array(img)
+#     img = img.astype("float32") / 255.0
+#     img = np.expand_dims(img, axis=0) # Model expects a batch
+#     return img
+
+# st.title("Simpson Character Classifier")
+
+# # Uploaded file for prediction
+# uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+# if uploaded_file is not None:
+#     image = Image.open(uploaded_file)
+#     st.image(image, caption='Uploaded Image', use_column_width=True)
+    
+#     # Preprocess and predict
+#     processed_image = preprocess_image(image)
+#     predictions = model.predict(processed_image)
+#     predicted_class_index = np.argmax(predictions)
+#     predicted_character = class_names.get(predicted_class_index, "Unknown")
+
+#     # Display predicted character
+#     st.write(f"Predicted Character: {predicted_character}")
+
+
 import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-from io import BytesIO
-import requests
 
-
+# Function to load the model and class names
 @st.cache(allow_output_mutation=True)
 def load_model_and_labels():
-    # Load the trained model from the specified directory.
     model = tf.keras.models.load_model('models/model.h5')
     class_names = {}
-    
-    # Open and read the labels file.
     with open('models/labels.txt', 'r') as f:
         for line in f:
-            # Split each line at the first space to separate the index from the class name.
-            parts = line.strip().split(' ', 1)
-            if len(parts) == 2:  # Ensure there are exactly two parts.
-                key, val = parts
-                class_names[int(key)] = val
-            else:
-                print(f"Skipping invalid line in labels file: '{line}'")
+            key, val = line.strip().split(' ', 1)
+            class_names[int(key)] = val
     return model, class_names
-
-model, class_names = load_model_and_labels()
-
 
 # Function to preprocess image
 def preprocess_image(image):
+    # Convert the image to RGB if it's not already
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    
+    # Resize the image
     img = image.resize((64, 64))
+    
+    # Convert image to numpy array
     img = np.array(img)
+    
+    # Normalize image
     img = img.astype("float32") / 255.0
-    img = np.expand_dims(img, axis=0) # Model expects a batch
+    
+    # Add batch dimension
+    img = np.expand_dims(img, axis=0)
+    
     return img
 
+# Load model and class names
+model, class_names = load_model_and_labels()
+
+# Streamlit UI
 st.title("Simpson Character Classifier")
 
 # Uploaded file for prediction
