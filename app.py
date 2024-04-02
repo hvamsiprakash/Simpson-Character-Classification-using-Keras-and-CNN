@@ -225,18 +225,27 @@ import tensorflow as tf
 from io import BytesIO
 import requests
 
-# Function to load the model and class names
+
 @st.cache(allow_output_mutation=True)
 def load_model_and_labels():
+    # Load the trained model from the specified directory.
     model = tf.keras.models.load_model('models/model.h5')
     class_names = {}
+    
+    # Open and read the labels file.
     with open('models/labels.txt', 'r') as f:
         for line in f:
-            (key, val) = line.strip().split(',')
-            class_names[int(key)] = val
+            # Split each line at the first space to separate the index from the class name.
+            parts = line.strip().split(' ', 1)
+            if len(parts) == 2:  # Ensure there are exactly two parts.
+                key, val = parts
+                class_names[int(key)] = val
+            else:
+                print(f"Skipping invalid line in labels file: '{line}'")
     return model, class_names
 
 model, class_names = load_model_and_labels()
+
 
 # Function to preprocess image
 def preprocess_image(image):
