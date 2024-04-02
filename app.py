@@ -274,6 +274,66 @@
 #     st.write(f"Predicted Character: {predicted_character}")
 
 
+# import streamlit as st
+# from PIL import Image
+# import numpy as np
+# import tensorflow as tf
+
+# # Function to load the model and class names
+# @st.cache(allow_output_mutation=True)
+# def load_model_and_labels():
+#     model = tf.keras.models.load_model('models/model.h5')
+#     class_names = {}
+#     with open('models/labels.txt', 'r') as f:
+#         for line in f:
+#             key, val = line.strip().split(' ', 1)
+#             class_names[int(key)] = val.replace("_", " ")  # Replacing underscores with spaces
+#     return model, class_names
+
+# # Function to preprocess image
+# def preprocess_image(image):
+#     # Convert the image to RGB if it's not already
+#     if image.mode != 'RGB':
+#         image = image.convert('RGB')
+    
+#     # Resize the image
+#     img = image.resize((64, 64))
+    
+#     # Convert image to numpy array
+#     img = np.array(img)
+    
+#     # Normalize image
+#     img = img.astype("float32") / 255.0
+    
+#     # Add batch dimension
+#     img = np.expand_dims(img, axis=0)
+    
+#     return img
+
+# # Load model and class names
+# model, class_names = load_model_and_labels()
+
+# # Streamlit UI
+# st.title("Simpson Character Classifier")
+
+# # Uploaded file for prediction
+# uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+# if uploaded_file is not None:
+#     image = Image.open(uploaded_file)
+#     st.image(image, caption='Uploaded Image', use_column_width=True)
+    
+#     # Preprocess and predict
+#     processed_image = preprocess_image(image)
+#     predictions = model.predict(processed_image)
+#     predicted_class_index = np.argmax(predictions)
+#     predicted_character = class_names.get(predicted_class_index, "Unknown")
+
+#     # Display predicted character
+#     st.write(f"Predicted Character: {predicted_character}")
+
+
+
 import streamlit as st
 from PIL import Image
 import numpy as np
@@ -283,11 +343,19 @@ import tensorflow as tf
 @st.cache(allow_output_mutation=True)
 def load_model_and_labels():
     model = tf.keras.models.load_model('models/model.h5')
+    
+    # Recompile the model to ensure its readiness
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    
     class_names = {}
     with open('models/labels.txt', 'r') as f:
         for line in f:
-            key, val = line.strip().split(' ', 1)
-            class_names[int(key)] = val.replace("_", " ")  # Replacing underscores with spaces
+            try:
+                key, val = line.strip().split(' ', 1)
+                class_names[int(key)] = val.replace("_", " ")  # Replacing underscores with spaces
+            except ValueError:
+                # Skip lines that don't contain the expected format
+                pass
     return model, class_names
 
 # Function to preprocess image
@@ -331,3 +399,4 @@ if uploaded_file is not None:
 
     # Display predicted character
     st.write(f"Predicted Character: {predicted_character}")
+
