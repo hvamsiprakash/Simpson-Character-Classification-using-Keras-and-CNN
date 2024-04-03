@@ -332,14 +332,10 @@
 #     # Display predicted character
 #     st.write(f"Predicted Character: {predicted_character}")
 
-
 import streamlit as st
 from PIL import Image
 import numpy as np
 from utils import load_model_and_labels, preprocess_image
-
-# Load model and class names
-model, class_names = load_model_and_labels()
 
 # Streamlit UI
 st.title("Simpson Character Classifier")
@@ -353,10 +349,10 @@ if uploaded_file is not None:
     
     # Preprocess and predict
     processed_image = preprocess_image(image)
+    model, class_names = load_model_and_labels()  # Cache the model and labels
     predictions = model.predict(processed_image)
     predicted_class_index = np.argmax(predictions)
     predicted_character = class_names.get(predicted_class_index, "Unknown")
 
     # Display predicted character
     st.write(f"Predicted Character: {predicted_character}")
-
