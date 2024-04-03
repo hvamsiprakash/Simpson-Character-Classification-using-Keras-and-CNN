@@ -333,65 +333,61 @@
 #     st.write(f"Predicted Character: {predicted_character}")
 
 import streamlit as st
-from tensorflow.keras.models import load_model
-from PIL import Image, ImageOps
+from PIL import Image
 import numpy as np
-import tensorflow as tf
-import cv2
-import os
+from keras.preprocessing import image as kp_image
+from keras.models import load_model
 
-# Load model and labels
-def load_model_and_labels():
-    model_path = os.path.join("models", "model.h5")
-    model = load_model(model_path)
-    
-    map_characters = {
-        0: 'abraham_grampa_simpson',
-        1: 'apu_nahasapeemapetilon',
-        2: 'bart_simpson',
-        3: 'charles_montgomery_burns',
-        4: 'chief_wiggum',
-        5: 'comic_book_guy',
-        6: 'edna_krabappel',
-        7: 'homer_simpson',
-        8: 'kent_brockman',
-        9: 'krusty_the_clown',
-        10: 'lisa_simpson',
-        11: 'marge_simpson',
-        12: 'milhouse_van_houten',
-        13: 'moe_szyslak',
-        14: 'ned_flanders',
-        15: 'nelson_muntz',
-        16: 'principal_skinner',
-        17: 'sideshow_bob'
-    }
-    class_names = [map_characters[i] for i in range(len(map_characters))]
-    return model, class_names
+# Function to load and preprocess the image
+def preprocess_image(image):
+    img = image.resize((64, 64))
+    img = kp_image.img_to_array(img)
+    img = np.expand_dims(img, axis=0)
+    img /= 255.0  # Normalize the image
+    return img
 
+# Load the model
+@st.cache(allow_output_mutation=True)
+def load_model():
+    return load_model('models/model.h5')
+
+# Compile the model with metrics
+def compile_model(model):
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Main function to run the Streamlit app
 def main():
-    st.title("Simpsons Character Classification")
-    st.write("Upload an image for character classification.")
+    st.title("Simpson Character Classifier")
 
+    # Load the model
+    model = load_model()
+
+    # Compile the model
+    compile_model(model)
+
+    # Upload image through Streamlit file uploader
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
-        # Preprocess the image
+        # Read the image
         image = Image.open(uploaded_file)
-        image = np.array(image)
-        image = cv2.resize(image, (64, 64))
-        image = image.reshape(1, 64, 64, 3)
-        image = image.astype('float32') / 255.0
+        st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        # Load model and labels
-        model, class_names = load_model_and_labels()
+        # Preprocess the image
+        img = preprocess_image(image)
 
-        # Make prediction
-        prediction = model.predict(image)
+        # Make predictions
+        class_names = ['abraham_grampa_simpson', 'apu_nahasapeemapetilon', 'bart_simpson', 'charles_montgomery_burns',
+                       'chief_wiggum', 'comic_book_guy', 'edna_krabappel', 'homer_simpson', 'kent_brockman',
+                       'krusty_the_clown', 'lisa_simpson', 'marge_simpson', 'milhouse_van_houten', 'moe_szyslak',
+                       'ned_flanders', 'nelson_muntz', 'principal_skinner', 'sideshow_bob']
+
+        # Prediction
+        prediction = model.predict(img)
         predicted_class = np.argmax(prediction)
-        predicted_label = class_names[predicted_class]
+        st.write("Predicted Character:", class_names[predicted_class])
 
-        st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
-        st.write("Predicted Class: ", predicted_label)
-
+# Run the app
 if __name__ == "__main__":
     main()
+
