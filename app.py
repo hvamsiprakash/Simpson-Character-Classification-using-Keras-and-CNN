@@ -336,7 +336,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 from keras.preprocessing import image as kp_image
-from keras.models import load_model
+from keras.models import load_model as keras_load_model
 
 # Function to load and preprocess the image
 def preprocess_image(image):
@@ -348,8 +348,8 @@ def preprocess_image(image):
 
 # Load the model
 @st.cache(allow_output_mutation=True)
-def load_model():
-    return load_model('models/model.h5')
+def load_custom_model():
+    return keras_load_model('models/model.h5')
 
 # Compile the model with metrics
 def compile_model(model):
@@ -360,7 +360,7 @@ def main():
     st.title("Simpson Character Classifier")
 
     # Load the model
-    model = load_model()
+    model = load_custom_model()
 
     # Compile the model
     compile_model(model)
@@ -390,4 +390,3 @@ def main():
 # Run the app
 if __name__ == "__main__":
     main()
-
