@@ -333,26 +333,65 @@
 #     st.write(f"Predicted Character: {predicted_character}")
 
 import streamlit as st
-from PIL import Image
+from tensorflow.keras.models import load_model
+from PIL import Image, ImageOps
 import numpy as np
-from utils import load_model_and_labels, preprocess_image
+import tensorflow as tf
+import cv2
+import os
 
-# Streamlit UI
-st.title("Simpson Character Classifier")
-
-# Uploaded file for prediction
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
+# Load model and labels
+def load_model_and_labels():
+    model_path = os.path.join("models", "model.h5")
+    model = load_model(model_path)
     
-    # Preprocess and predict
-    processed_image = preprocess_image(image)
-    model, class_names = load_model_and_labels()  # Cache the model and labels
-    predictions = model.predict(processed_image)
-    predicted_class_index = np.argmax(predictions)
-    predicted_character = class_names.get(predicted_class_index, "Unknown")
+    map_characters = {
+        0: 'abraham_grampa_simpson',
+        1: 'apu_nahasapeemapetilon',
+        2: 'bart_simpson',
+        3: 'charles_montgomery_burns',
+        4: 'chief_wiggum',
+        5: 'comic_book_guy',
+        6: 'edna_krabappel',
+        7: 'homer_simpson',
+        8: 'kent_brockman',
+        9: 'krusty_the_clown',
+        10: 'lisa_simpson',
+        11: 'marge_simpson',
+        12: 'milhouse_van_houten',
+        13: 'moe_szyslak',
+        14: 'ned_flanders',
+        15: 'nelson_muntz',
+        16: 'principal_skinner',
+        17: 'sideshow_bob'
+    }
+    class_names = [map_characters[i] for i in range(len(map_characters))]
+    return model, class_names
 
-    # Display predicted character
-    st.write(f"Predicted Character: {predicted_character}")
+def main():
+    st.title("Simpsons Character Classification")
+    st.write("Upload an image for character classification.")
+
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+    if uploaded_file is not None:
+        # Preprocess the image
+        image = Image.open(uploaded_file)
+        image = np.array(image)
+        image = cv2.resize(image, (64, 64))
+        image = image.reshape(1, 64, 64, 3)
+        image = image.astype('float32') / 255.0
+
+        # Load model and labels
+        model, class_names = load_model_and_labels()
+
+        # Make prediction
+        prediction = model.predict(image)
+        predicted_class = np.argmax(prediction)
+        predicted_label = class_names[predicted_class]
+
+        st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
+        st.write("Predicted Class: ", predicted_label)
+
+if __name__ == "__main__":
+    main()
