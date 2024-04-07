@@ -423,64 +423,124 @@
 #     main()
 
 
+# # Importing required libraries
+# import streamlit as st
+# from tensorflow.keras.models import load_model
+# import numpy as np
+# import cv2
+# from werkzeug.utils import secure_filename
+
+# # Load the pre-trained model
+# model = load_model('models/model.h5')
+
+# # Define character mapping
+# map_characters = {0: 'abraham_grampa_simpson', 1: 'apu_nahasapeemapetilon', 2: 'bart_simpson', 
+#         3: 'charles_montgomery_burns', 4: 'chief_wiggum', 5: 'comic_book_guy', 6: 'edna_krabappel', 
+#         7: 'homer_simpson', 8: 'kent_brockman', 9: 'krusty_the_clown', 10: 'lisa_simpson', 
+#         11: 'marge_simpson', 12: 'milhouse_van_houten', 13: 'moe_szyslak', 
+#         14: 'ned_flanders', 15: 'nelson_muntz', 16: 'principal_skinner', 17: 'sideshow_bob'}
+
+# # Function to center crop an image
+# def center_crop(img, dim):
+#     width, height = img.shape[1], img.shape[0]
+#     crop_width = dim[0] if dim[0] < img.shape[1] else img.shape[1]
+#     crop_height = dim[1] if dim[1] < img.shape[0] else img.shape[0]
+#     mid_x, mid_y = int(width/2), int(height/2)
+#     cw2, ch2 = int(crop_width/2), int(crop_height/2)
+#     crop_img = img[mid_y-ch2:mid_y+ch2, mid_x-cw2:mid_x+cw2]
+#     return crop_img
+
+# # Function to preprocess the uploaded image
+# def preprocess_img(uploaded_file):
+#     image = cv2.imdecode(np.fromstring(uploaded_file.read(), np.uint8), 1)
+#     cropped_img = center_crop(image, image.shape)
+#     pic = cv2.resize(cropped_img, (64,64))
+#     img_reshape = pic.reshape(1, 64, 64, 3)
+#     return img_reshape
+
+# # Function to predict the uploaded image
+# def predict_result(predict):
+#     pred = model.predict(predict)
+#     return map_characters[np.argmax(pred[0])].replace('_',' ').title()
+
+# def main():
+#     st.title("Simpsons Character Classifier")
+
+#     # Upload image
+#     uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+
+#     if uploaded_file is not None:
+#         st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
+
+#         # Preprocess and predict
+#         if st.button('Predict'):
+#             try:
+#                 img = preprocess_img(uploaded_file)
+#                 pred = predict_result(img)
+#                 st.success(f"The predicted character is: {pred}")
+#             except:
+#                 st.error("File cannot be processed.")
+
+# if __name__ == "__main__":
+#     main()
+
 # Importing required libraries
 import streamlit as st
 from tensorflow.keras.models import load_model
 import numpy as np
 import cv2
-from werkzeug.utils import secure_filename
 
 # Load the pre-trained model
 model = load_model('models/model.h5')
 
 # Define character mapping
 map_characters = {0: 'abraham_grampa_simpson', 1: 'apu_nahasapeemapetilon', 2: 'bart_simpson', 
-        3: 'charles_montgomery_burns', 4: 'chief_wiggum', 5: 'comic_book_guy', 6: 'edna_krabappel', 
-        7: 'homer_simpson', 8: 'kent_brockman', 9: 'krusty_the_clown', 10: 'lisa_simpson', 
-        11: 'marge_simpson', 12: 'milhouse_van_houten', 13: 'moe_szyslak', 
-        14: 'ned_flanders', 15: 'nelson_muntz', 16: 'principal_skinner', 17: 'sideshow_bob'}
-
-# Function to center crop an image
-def center_crop(img, dim):
-    width, height = img.shape[1], img.shape[0]
-    crop_width = dim[0] if dim[0] < img.shape[1] else img.shape[1]
-    crop_height = dim[1] if dim[1] < img.shape[0] else img.shape[0]
-    mid_x, mid_y = int(width/2), int(height/2)
-    cw2, ch2 = int(crop_width/2), int(crop_height/2)
-    crop_img = img[mid_y-ch2:mid_y+ch2, mid_x-cw2:mid_x+cw2]
-    return crop_img
+                  3: 'charles_montgomery_burns', 4: 'chief_wiggum', 5: 'comic_book_guy', 
+                  6: 'edna_krabappel', 7: 'homer_simpson', 8: 'kent_brockman', 
+                  9: 'krusty_the_clown', 10: 'lisa_simpson', 11: 'marge_simpson', 
+                  12: 'milhouse_van_houten', 13: 'moe_szyslak', 14: 'ned_flanders', 
+                  15: 'nelson_muntz', 16: 'principal_skinner', 17: 'sideshow_bob'}
 
 # Function to preprocess the uploaded image
 def preprocess_img(uploaded_file):
-    image = cv2.imdecode(np.fromstring(uploaded_file.read(), np.uint8), 1)
-    cropped_img = center_crop(image, image.shape)
-    pic = cv2.resize(cropped_img, (64,64))
-    img_reshape = pic.reshape(1, 64, 64, 3)
+    # Read the uploaded file as bytes, then decode into an image array
+    image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), cv2.IMREAD_COLOR)
+    # Resize the image to 64x64 pixels
+    resized_img = cv2.resize(image, (64, 64))
+    # Reshape the image to the format the model expects: (1, 64, 64, 3)
+    img_reshape = resized_img.reshape(1, 64, 64, 3)
     return img_reshape
 
-# Function to predict the uploaded image
+# Function to predict the character from the uploaded image
 def predict_result(predict):
+    # Use the model to make a prediction
     pred = model.predict(predict)
-    return map_characters[np.argmax(pred[0])].replace('_',' ').title()
+    # Find the character with the highest prediction probability
+    character = map_characters[np.argmax(pred[0])]
+    # Format the character name for display
+    return character.replace('_', ' ').title()
 
 def main():
     st.title("Simpsons Character Classifier")
 
-    # Upload image
+    # Upload image widget
     uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
+        # Display the uploaded image
         st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
 
-        # Preprocess and predict
+        # Predict button
         if st.button('Predict'):
             try:
+                # Preprocess the uploaded image
                 img = preprocess_img(uploaded_file)
+                # Make a prediction
                 pred = predict_result(img)
+                # Display the prediction result
                 st.success(f"The predicted character is: {pred}")
-            except:
-                st.error("File cannot be processed.")
+            except Exception as e:
+                st.error(f"Error processing file: {e}")
 
 if __name__ == "__main__":
     main()
-
