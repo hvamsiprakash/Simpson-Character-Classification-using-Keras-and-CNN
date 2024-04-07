@@ -187,13 +187,13 @@ from keras.models import load_model
 
 # Load the model
 @st.cache(allow_output_mutation=True)
-def load_model():
-    model = load_model('models/model.h5')
+def load_model(model_path):
+    model = load_model(model_path)
     return model
 
 # Use lambda function to call load_model with a dummy argument
-model = load_model()  # This will call load_model without passing any arguments
-
+model_path = 'models/model.h5'
+model = load_model(model_path)  # This will call load_model without passing any arguments
 
 # Function to preprocess the image
 def preprocess_image(image):
