@@ -7,6 +7,32 @@ import cv2
 # Load the pre-trained model
 model = load_model('models/model.h5')
 
+
+# Function to load images from the provided URLs
+def load_images():
+    title1_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/master/images/title1.png'    
+    title2_url = 'https://github.com/hvamsiprakash/Simpson-Character-Classification-using-Keras-and-CNN/raw/master/images/title2.png'
+    title1_image = Image.open(BytesIO(requests.get(title1_url).content))
+    title2_image = Image.open(BytesIO(requests.get(title2_url).content))
+    return title1_image, title2_image
+
+# Load and display images as titles
+title1_image, title2_image = load_images()
+
+# Set page background color to black
+st.markdown("""
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# Display title images in the main interface
+st.image(title1_image, use_column_width=True)
+st.image(title2_image, use_column_width=True)
+
 # Define character mapping
 map_characters = {0: 'abraham_grampa_simpson', 1: 'apu_nahasapeemapetilon', 2: 'bart_simpson', 
                   3: 'charles_montgomery_burns', 4: 'chief_wiggum', 5: 'comic_book_guy', 
