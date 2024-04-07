@@ -191,10 +191,6 @@ def load_model(model_path):
     model = load_model(model_path)
     return model
 
-# Use lambda function to call load_model with a dummy argument
-model_path = 'models/model.h5'
-model = load_model(model_path)  # This will call load_model without passing any arguments
-
 # Function to preprocess the image
 def preprocess_image(image):
     img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
@@ -203,7 +199,7 @@ def preprocess_image(image):
     return img
 
 # Function to make prediction
-def predict_character(image):
+def predict_character(model, image):
     img = preprocess_image(image)
     prediction = model.predict(img)
     character_index = np.argmax(prediction)
@@ -220,6 +216,9 @@ def predict_character(image):
 # Streamlit app
 def main():
     st.title("Simpsons Character Predictor")
+    model_path = 'models/model.h5'
+    model = load_model(model_path)
+
     st.sidebar.title("Upload Image")
     uploaded_file = st.sidebar.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
@@ -230,7 +229,7 @@ def main():
         st.write("Classifying...")
 
         if st.button("Predict"):
-            character = predict_character(image)
+            character = predict_character(model, image)
             st.success(f"The character is: {character}")
 
 if __name__ == '__main__':
