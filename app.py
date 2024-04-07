@@ -191,7 +191,9 @@ def load_model():
     model = load_model('models/model.h5')
     return model
 
-model = load_model(0)
+# Use lambda function to call load_model with a dummy argument
+model = load_model()  # This will call load_model without passing any arguments
+
 
 # Function to preprocess the image
 def preprocess_image(image):
