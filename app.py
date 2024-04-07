@@ -191,7 +191,7 @@ def load_model():
     model = load_model('models/model.h5')
     return model
 
-model = load_model()
+model = load_model(0)
 
 # Function to preprocess the image
 def preprocess_image(image):
