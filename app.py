@@ -38,6 +38,33 @@ def predict_result(predict):
 
 def main():
     st.title("Simpsons Character Classifier")
+    st.sidebar.title("Project Description")
+    st.sidebar.markdown("""
+    This project implements a Simpsons character classifier using a pre-trained convolutional neural network (CNN) model. The model is trained to classify images of Simpsons characters into one of the following classes:
+- Abraham Grampa Simpson
+- Apu Nahasapeemapetilon
+- Bart Simpson
+- Charles Montgomery Burns
+- Chief Wiggum
+- Comic Book Guy
+- Edna Krabappel
+- Homer Simpson
+- Kent Brockman
+- Krusty the Clown
+- Lisa Simpson
+- Marge Simpson
+- Milhouse Van Houten
+- Moe Szyslak
+- Ned Flanders
+- Nelson Muntz
+- Principal Skinner
+- Sideshow Bob
+
+The dataset used for training the model is available on [Kaggle](https://www.kaggle.com/datasets/alexattia/the-simpsons-characters-dataset). It consists of images of various characters from the Simpsons animated TV series. The model is trained on this dataset to recognize and classify the characters accurately.
+
+The user can upload an image of a Simpsons character, and the model will predict the character's name based on the uploaded image. The project aims to demonstrate the application of deep learning techniques in image classification tasks, specifically in the context of identifying characters from the Simpsons series.
+    
+    """)
 
     # Upload image widget
     uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
