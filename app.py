@@ -180,57 +180,50 @@
 
 
 import streamlit as st
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 import numpy as np
 import cv2
-from PIL import Image
-from keras.models import load_model
 
-# Load the model
-@st.cache(allow_output_mutation=True)
-def load_model(model_path):
-    model = load_model(model_path)
-    return model
+# Load the pre-trained model
+model = load_model('models/model.h5')
 
-# Function to preprocess the image
-def preprocess_image(image):
-    img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-    img = cv2.resize(img, (64, 64))
-    img = np.expand_dims(img, axis=0)
-    return img
+# Define character mapping
+map_characters = {0: 'abraham_grampa_simpson', 1: 'apu_nahasapeemapetilon', 2: 'bart_simpson', 
+                  3: 'charles_montgomery_burns', 4: 'chief_wiggum', 5: 'comic_book_guy', 
+                  6: 'edna_krabappel', 7: 'homer_simpson', 8: 'kent_brockman', 
+                  9: 'krusty_the_clown', 10: 'lisa_simpson', 11: 'marge_simpson', 
+                  12: 'milhouse_van_houten', 13: 'moe_szyslak', 14: 'ned_flanders', 
+                  15: 'nelson_muntz', 16: 'principal_skinner', 17: 'sideshow_bob'}
 
-# Function to make prediction
-def predict_character(model, image):
-    img = preprocess_image(image)
-    prediction = model.predict(img)
-    character_index = np.argmax(prediction)
-    characters = {
-        0: 'abraham_grampa_simpson', 1: 'apu_nahasapeemapetilon', 2: 'bart_simpson',
-        3: 'charles_montgomery_burns', 4: 'chief_wiggum', 5: 'comic_book_guy', 6: 'edna_krabappel',
-        7: 'homer_simpson', 8: 'kent_brockman', 9: 'krusty_the_clown', 10: 'lisa_simpson',
-        11: 'marge_simpson', 12: 'milhouse_van_houten', 13: 'moe_szyslak',
-        14: 'ned_flanders', 15: 'nelson_muntz', 16: 'principal_skinner', 17: 'sideshow_bob'
-    }
-    character_name = characters[character_index]
-    return character_name.replace('_', ' ').title()
+# Function to preprocess the uploaded image
+def preprocess_img(uploaded_file):
+    image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), cv2.IMREAD_COLOR)
+    resized_img = cv2.resize(image, (64, 64))
+    img_reshape = resized_img.reshape(1, 64, 64, 3)
+    return img_reshape
 
-# Streamlit app
+# Function to predict the character from the uploaded image
+def predict_result(predict):
+    pred = model.predict(predict)
+    character = map_characters[np.argmax(pred[0])]
+    return character.replace('_', ' ').title()
+
 def main():
-    st.title("Simpsons Character Predictor")
-    model_path = 'models/model.h5'
-    model = load_model(model_path)
+    st.title("Simpsons Character Classifier")
 
-    st.sidebar.title("Upload Image")
-    uploaded_file = st.sidebar.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image", use_column_width=True)
-        st.write("")
-        st.write("Classifying...")
+        st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
 
-        if st.button("Predict"):
-            character = predict_character(model, image)
-            st.success(f"The character is: {character}")
+        if st.button('Predict'):
+            try:
+                img = preprocess_img(uploaded_file)
+                pred = predict_result(img)
+                st.success(f"The predicted character is: {pred}")
+            except Exception as e:
+                st.error(f"Error processing file: {e}")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
